@@ -12,6 +12,6 @@ Thumbs.db
 node_modules/
 
 # Собранные файлы (допишите самостоятельно)
-*.js
-*.map
+public/*.js
+public/*.map
 .prettierrc
