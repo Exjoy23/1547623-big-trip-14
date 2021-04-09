@@ -1,11 +1,10 @@
-import { createOfferMarkup, formatDate } from '../utils.js';
+import { createElement, createOffersMarkup, formatDate } from '../utils.js';
 
-export const createEditPointTemplate = ({ basePrice, dateFrom, dateTo, destination, isFavorite, offers, type }) => {
+const createEditPointTemplate = ({ basePrice, dateFrom, dateTo, destination, offers, type }) => {
   const dateTimeStart = formatDate(dateFrom);
   const dateTimeEnd = formatDate(dateTo);
 
-  return `
-  <li class="trip-events__item">
+  return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
@@ -76,7 +75,8 @@ export const createEditPointTemplate = ({ basePrice, dateFrom, dateTo, destinati
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
+          value="${destination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -111,16 +111,40 @@ export const createEditPointTemplate = ({ basePrice, dateFrom, dateTo, destinati
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOfferMarkup(offers)}
+            ${createOffersMarkup(offers)}
           </div>
         </section>
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destination.description}</p>
+          <p class="event__destination-description">
+          ${destination.description}</p>
         </section>
       </section>
     </form>
   </li>
   `;
 };
+
+export default class EditPoint {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditPointTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
