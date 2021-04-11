@@ -7,3 +7,6 @@ env:
   browser: true
 
 extends: 'htmlacademy/vanilla'
+
+rules:
+  comma-dangle: 0

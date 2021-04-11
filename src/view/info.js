@@ -1,15 +1,67 @@
-export const createInfoTemplate = () => {
-  return `
-  <section class="trip-main__trip-info  trip-info">
-    <div class="trip-info__main">
-      <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
+import dayjs from 'dayjs';
+import { createElement } from '../utils.js';
 
-      <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
+const getTotalPrice = (points) => {
+  let totalPrice = 0;
+
+  points.forEach((item) => {
+    totalPrice += item.basePrice;
+  });
+
+  return totalPrice;
+};
+
+const getRoute = (points) => {
+  if (points.length <= 3) {
+    const point1 = points[0] ? points[0].destination.name : '';
+    const point2 = points[1] ? ' &mdash; ' + points[1].destination.name : '';
+    const point3 = points[2] ? ' &mdash; ' + points[2].destination.name : '';
+
+    return `${point1}${point2}${point3}`;
+  }
+
+  return `${points[0].destination.name} &mdash; ... &mdash;
+    ${points[points.length - 1].destination.name}`;
+};
+
+const createInfoTemplate = (points) => {
+  const dayStart = dayjs(points[0].dateFrom).format('MMM D');
+  const dayEnd = dayjs(points[points.length - 1].dateFrom).format('MMM D');
+
+  return `<section class="trip-main__trip-info  trip-info">
+    <div class="trip-info__main">
+      <h1 class="trip-info__title">${getRoute(points)}</h1>
+
+      <p class="trip-info__dates">${dayStart}&nbsp;&mdash;&nbsp;${dayEnd}</p>
     </div>
 
     <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+      Total: &euro;&nbsp;<span class="trip-info__cost-value">
+      ${getTotalPrice(points)}</span>
     </p>
   </section>
   `;
 };
+
+export default class Info {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createInfoTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
