@@ -22,7 +22,7 @@ const createFilterTemplate = () => {
   `;
 };
 
-export default class Filter {
+export default class FilterView {
   constructor() {
     this._element = null;
   }

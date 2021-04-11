@@ -126,7 +126,7 @@ const createEditPointTemplate = ({ basePrice, dateFrom, dateTo, destination, off
   `;
 };
 
-export default class EditPoint {
+export default class EditPointView {
   constructor(point) {
     this._point = point;
     this._element = null;
