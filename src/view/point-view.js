@@ -13,6 +13,20 @@ const createOfferMarkup = (offer) => {
   `;
 };
 
+const showTime = (day, hour, minute) => {
+  if (day) {
+    return `${day}D ${hour ? hour : '00'}H ${minute ? minute : '00'}M`;
+  }
+
+  if (hour) {
+    return `${hour}H ${minute ? minute : '00'}M`;
+  }
+
+  if (minute) {
+    return `${minute}M`;
+  }
+};
+
 const createPointTemplate = ({ basePrice, dateFrom, dateTo, destination, isFavorite, offers, type }) => {
   const dateTimeStart = dayjs(dateFrom).format('YYYY-MM-DDTHH:mm');
   const dateTimeEnd = dayjs(dateTo).format('YYYY-MM-DDTHH:mm');
@@ -22,7 +36,7 @@ const createPointTemplate = ({ basePrice, dateFrom, dateTo, destination, isFavor
   const duration = dayjs(dateTo).diff(dayjs(dateFrom), 'm');
   const durationDay = Math.floor(duration / MINUTES_IN_HOUR / HOURS_IN_DAY);
   const durationHour = Math.floor((duration - durationDay * HOURS_IN_DAY * MINUTES_IN_HOUR) / MINUTES_IN_HOUR);
-  const durationMinut = duration % MINUTES_IN_HOUR;
+  const durationMinute = duration % MINUTES_IN_HOUR;
 
   const offersMarkup = offers.map((item) => createOfferMarkup(item)).join(' ');
 
@@ -40,9 +54,8 @@ const createPointTemplate = ({ basePrice, dateFrom, dateTo, destination, isFavor
           <time class="event__end-time" datetime="${dateTimeEnd}">${dateEnd}</time>
         </p>
         <p class="event__duration">
-        ${durationDay ? durationDay + 'D' : ''}
-        ${durationHour ? durationHour + 'H' : ''}
-        ${durationMinut ? durationMinut + 'M' : ''}</p>
+          ${showTime(durationDay, durationHour, durationMinute)}
+        </p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
@@ -66,7 +79,7 @@ const createPointTemplate = ({ basePrice, dateFrom, dateTo, destination, isFavor
   `;
 };
 
-export default class Point {
+export default class PointView {
   constructor(point) {
     this._point = point;
     this._element = null;

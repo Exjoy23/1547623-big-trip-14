@@ -43,7 +43,7 @@ const createInfoTemplate = (points) => {
   `;
 };
 
-export default class Info {
+export default class InfoView {
   constructor(point) {
     this._point = point;
     this._element = null;
