@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getRandomInteger } from '../utils.js';
+import { getRandomInteger } from '../utils/common.js';
 
 const MIN_BASE_PRICE = 100;
 const MAX_BASE_PRICE = 1000;
