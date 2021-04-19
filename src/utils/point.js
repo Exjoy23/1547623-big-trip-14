@@ -20,6 +20,26 @@ export const createOffersMarkup = (offers) => {
     .join(' ');
 };
 
+const createPictureMarkup = (pictures) => {
+  return pictures
+    .map((item) => {
+      return `<img class="event__photo" src="${item.src}" alt="${item.description}">`;
+    })
+    .join(' ');
+};
+
+export const createPictureContainerMarkup = (pictures) => {
+  if (pictures.length) {
+    return `<div class="event__photos-container">
+    <div class="event__photos-tape">
+      ${createPictureMarkup(pictures)}
+    </div>
+  </div>`;
+  }
+
+  return '';
+};
+
 export const formatDate = (date) => {
   return dayjs(date).format('DD/MM/YY HH:mm');
 };
