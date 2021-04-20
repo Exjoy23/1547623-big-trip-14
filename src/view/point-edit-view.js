@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view.js';
-import { createOffersMarkup, formatDate } from '../utils/point.js';
+import { createOffersMarkup, createPictureContainerMarkup, formatDate } from '../utils/point.js';
 
 const createEditPointTemplate = ({ basePrice, dateFrom, dateTo, destination, offers, type }) => {
   const dateTimeStart = formatDate(dateFrom);
@@ -103,7 +103,7 @@ const createEditPointTemplate = ({ basePrice, dateFrom, dateTo, destination, off
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
+        <button class="event__rollup-btn event__rollup-btn--close" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
@@ -121,13 +121,15 @@ const createEditPointTemplate = ({ basePrice, dateFrom, dateTo, destination, off
           <p class="event__destination-description">
           ${destination.description}</p>
         </section>
+
+        ${createPictureContainerMarkup(destination.pictures)}
       </section>
     </form>
   </li>
   `;
 };
 
-export default class EditPointView extends AbstractView {
+export default class PointEditView extends AbstractView {
   constructor(point) {
     super();
     this._point = point;
@@ -142,7 +144,7 @@ export default class EditPointView extends AbstractView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(this._point);
   }
 
   _closeClickHandler(evt) {
@@ -153,10 +155,5 @@ export default class EditPointView extends AbstractView {
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector('.event--edit').addEventListener('submit', this._formSubmitHandler);
-  }
-
-  setCloseClickHandler(callback) {
-    this._callback.click = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._closeClickHandler);
   }
 }
