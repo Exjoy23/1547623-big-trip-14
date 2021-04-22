@@ -43,3 +43,11 @@ export const createPictureContainerMarkup = (pictures) => {
 export const formatDate = (date) => {
   return dayjs(date).format('DD/MM/YY HH:mm');
 };
+
+export const sortPointTime = (pointA, pointB) => {
+  return dayjs(pointB.dateTo).diff(dayjs(pointA.dateTo)) - dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
+};
+
+export const sortPointPrice = (priceA, priceB) => {
+  return priceB.basePrice - priceA.basePrice;
+};
