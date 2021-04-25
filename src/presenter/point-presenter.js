@@ -86,16 +86,20 @@ export default class PointPresenter {
 
   _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this._replaceFormToCard();
+      this._closeFormWithoutSave(evt);
     }
   }
 
   _clickHandler(evt) {
     if (evt.target.classList.contains('event__rollup-btn--close')) {
-      evt.preventDefault();
-      this.resetView();
+      this._closeFormWithoutSave(evt);
     }
+  }
+
+  _closeFormWithoutSave(evt) {
+    evt.preventDefault();
+    this._pointEditComponent.reset(this._point);
+    this._replaceFormToCard();
   }
 
   _handleEditClick() {
