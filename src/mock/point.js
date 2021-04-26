@@ -67,14 +67,14 @@ const getId = () => {
   return id++;
 };
 
-const getDescription = () => {
+export const getDescription = () => {
   return new Array(getRandomInteger(MIN_DESCRIPTION, MAX_DESCRIPTION))
     .fill()
     .map(() => DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)])
     .join(' ');
 };
 
-const generateOffers = () => {
+export const generateOffers = () => {
   return Array.from(
     new Set(
       new Array(getRandomInteger(MIN_OFFER, MAX_OFFER))
@@ -100,7 +100,7 @@ const generatePicture = () => {
   };
 };
 
-const getPictures = () => {
+export const getPictures = () => {
   return new Array(getRandomInteger(MIN_PICTURE, MAX_PICTURE)).fill().map(() => generatePicture());
 };
 
