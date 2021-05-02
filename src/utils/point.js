@@ -3,9 +3,10 @@ import dayjs from 'dayjs';
 let id = 1;
 
 export const createOffersMarkup = (offers) => {
-  return offers
-    .map((item) => {
-      return `
+  if (offers) {
+    return offers
+      .map((item) => {
+        return `
       <div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox"
         name="event-offer-${item.title}">
@@ -16,8 +17,9 @@ export const createOffersMarkup = (offers) => {
         </label>
       </div>
       `;
-    })
-    .join(' ');
+      })
+      .join(' ');
+  }
 };
 
 const createPictureMarkup = (pictures) => {
@@ -29,7 +31,7 @@ const createPictureMarkup = (pictures) => {
 };
 
 export const createPictureContainerMarkup = (pictures) => {
-  if (pictures.length) {
+  if (pictures && pictures.length) {
     return `<div class="event__photos-container">
     <div class="event__photos-tape">
       ${createPictureMarkup(pictures)}
@@ -38,6 +40,23 @@ export const createPictureContainerMarkup = (pictures) => {
   }
 
   return '';
+};
+
+export const createOfferContainerMarkup = (child) => {
+  return `<section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+      ${child}
+    </div>
+  </section>`;
+};
+
+export const createDestinationContainerMarkup = (destination) => {
+  return `<section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">
+    ${destination.description}</p>
+  </section>`;
 };
 
 export const formatDate = (date) => {

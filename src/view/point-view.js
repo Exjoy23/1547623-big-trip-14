@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
+import { PointType } from '../const.js';
 
 const MINUTES_IN_HOUR = 60;
 const HOURS_IN_DAY = 24;
@@ -25,9 +26,19 @@ const showTime = (day, hour, minute) => {
   if (minute) {
     return `${minute}M`;
   }
+
+  return '00M';
 };
 
-const createPointTemplate = ({ basePrice, dateFrom, dateTo, destination, isFavorite, offers, type }) => {
+const createPointTemplate = ({
+  basePrice,
+  dateFrom,
+  dateTo,
+  destination,
+  isFavorite,
+  offers,
+  type = PointType.TAXI,
+}) => {
   const dateTimeStart = dayjs(dateFrom).format('YYYY-MM-DDTHH:mm');
   const dateTimeEnd = dayjs(dateTo).format('YYYY-MM-DDTHH:mm');
   const dayStart = dayjs(dateFrom).format('D MMM');
@@ -38,7 +49,7 @@ const createPointTemplate = ({ basePrice, dateFrom, dateTo, destination, isFavor
   const durationHour = Math.floor((duration - durationDay * HOURS_IN_DAY * MINUTES_IN_HOUR) / MINUTES_IN_HOUR);
   const durationMinute = duration % MINUTES_IN_HOUR;
 
-  const offersMarkup = offers.map((item) => createOfferMarkup(item)).join(' ');
+  const offersMarkup = offers ? offers.map((item) => createOfferMarkup(item)).join(' ') : '';
 
   return `<li class="trip-events__item">
     <div class="event">
@@ -46,7 +57,7 @@ const createPointTemplate = ({ basePrice, dateFrom, dateTo, destination, isFavor
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destination.name}</h3>
+      <h3 class="event__title">${type} ${destination ? destination.name : ''}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${dateTimeStart}">${dateStart}</time>
