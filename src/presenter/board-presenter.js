@@ -1,8 +1,10 @@
 import BoardView from '../view/board-view.js';
 import SortView from '../view/sort-view.js';
 import PointListView from '../view/point-list-view.js';
+import LoadingView from '../view/loading-view.js';
+import InfoView from '../view/info-view.js';
 import NoPointView from '../view/no-point-view.js';
-import PointPresenter from '../presenter/point-presenter.js';
+import PointPresenter, { State as PointPresenterViewState } from '../presenter/point-presenter.js';
 import PointNewPresenter from './point-new-presenter.js';
 import { render, RenderPosition, remove } from '../utils/render.js';
 import { sortPointTime, sortPointPrice } from '../utils/point.js';
@@ -10,18 +12,22 @@ import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import { filter } from '../utils/filter.js';
 
 export default class BoardPresenter {
-  constructor(boardContainer, pointsModel, filterModel) {
+  constructor(boardContainer, pointsModel, filterModel, api) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._boardContainer = boardContainer;
     this._pointPresenter = {};
     this._currentSortType = SortType.DAY;
+    this._isLoading = true;
+    this._api = api;
 
     this._sortComponent = null;
 
     this._boardComponent = new BoardView();
     this._pointListComponent = new PointListView();
     this._noPointComponent = new NoPointView();
+    this._loadingComponent = new LoadingView();
+    this._infoComponent = null;
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -69,13 +75,37 @@ export default class BoardPresenter {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this._pointsModel.updatePoint(updateType, update);
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
+        this._api
+          .updatePoint(update)
+          .then((response) => {
+            this._pointsModel.updatePoint(updateType, response);
+          })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType, update);
+        this._pointNewPresenter.setSaving();
+        this._api
+          .addPoint(update)
+          .then((response) => {
+            this._pointsModel.addPoint(updateType, response);
+          })
+          .catch(() => {
+            this._pointNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
+        this._api
+          .deletePoint(update)
+          .then(() => {
+            this._pointsModel.deletePoint(updateType, update);
+          })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
     }
   }
@@ -91,6 +121,11 @@ export default class BoardPresenter {
         break;
       case UpdateType.MAJOR:
         this._clearBoard({ resetSortType: true });
+        this._renderBoard();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderBoard();
         break;
     }
@@ -117,6 +152,17 @@ export default class BoardPresenter {
     render(this._boardComponent, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
+  _renderInfo(points) {
+    if (this._infoComponent !== null) {
+      this._infoComponent = null;
+    }
+
+    this._infoComponent = new InfoView(points);
+
+    const infoElement = document.querySelector('.trip-main');
+    render(infoElement, this._infoComponent, RenderPosition.AFTERBEGIN);
+  }
+
   _renderPoint(point) {
     const pointPresenter = new PointPresenter(this._pointListComponent, this._handleViewAction, this._handleModeChange);
     pointPresenter.init(point);
@@ -134,10 +180,16 @@ export default class BoardPresenter {
 
     remove(this._sortComponent);
     remove(this._noPointComponent);
+    remove(this._loadingComponent);
+    remove(this._infoComponent);
 
     if (resetSortType) {
       this._currentSortType = SortType.DAY;
     }
+  }
+
+  _renderLoading() {
+    render(this._boardComponent, this._loadingComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderNoPoints() {
@@ -145,6 +197,11 @@ export default class BoardPresenter {
   }
 
   _renderBoard() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const points = this._getPoints();
     const pointCount = points.length;
 
@@ -155,6 +212,7 @@ export default class BoardPresenter {
     if (pointCount) {
       this._renderSort();
       this._renderPoints(points);
+      this._renderInfo(points);
     }
   }
 }

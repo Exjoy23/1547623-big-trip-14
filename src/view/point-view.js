@@ -49,7 +49,7 @@ const createPointTemplate = ({
   const durationHour = Math.floor((duration - durationDay * HOURS_IN_DAY * MINUTES_IN_HOUR) / MINUTES_IN_HOUR);
   const durationMinute = duration % MINUTES_IN_HOUR;
 
-  const offersMarkup = offers ? offers.map((item) => createOfferMarkup(item)).join(' ') : '';
+  const offersMarkup = offers.length ? offers.map((item) => createOfferMarkup(item)).join(' ') : '';
 
   return `<li class="trip-events__item">
     <div class="event">

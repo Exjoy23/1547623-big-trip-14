@@ -5,7 +5,11 @@ const getTotalPrice = (points) => {
   let totalPrice = 0;
 
   points.forEach((item) => {
-    totalPrice += item.basePrice;
+    totalPrice += +item.basePrice;
+
+    item.offers.forEach((item) => {
+      totalPrice += item.price;
+    });
   });
 
   return totalPrice;

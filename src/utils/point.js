@@ -2,14 +2,24 @@ import dayjs from 'dayjs';
 
 let id = 1;
 
-export const createOffersMarkup = (offers) => {
-  if (offers) {
-    return offers
-      .map((item) => {
+const isCheckedOffer = (availableOffer, checkedOffers) => {
+  if (availableOffer && checkedOffers) {
+    return checkedOffers.some((item) => {
+      return [item.title].indexOf(availableOffer.title) !== -1;
+    });
+  }
+};
+
+export const createOffersMarkup = (availableOffers, checkedOffers, type) => {
+  if (availableOffers) {
+    return availableOffers
+      .filter((item) => item.type === type)[0]
+      .offers.map((item) => {
         return `
       <div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox"
-        name="event-offer-${item.title}">
+        name="event-offer-${item.title}" data-title="${item.title}"
+        ${isCheckedOffer(item, checkedOffers) ? 'checked' : ''}>
         <label class="event__offer-label" for="event-offer-${id++}">
           <span class="event__offer-title">${item.title}</span>
           &plus;&euro;&nbsp;
