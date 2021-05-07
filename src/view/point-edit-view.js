@@ -6,12 +6,38 @@ import {
   createOfferContainerMarkup,
   createDestinationContainerMarkup,
 } from '../utils/point.js';
-import { generateOffers, getPictures, getDescription } from '../mock/point.js';
 import { PointType } from '../const.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import { destinationData, offersData } from '../main.js';
 
-const createPointEditTemplate = ({ basePrice, dateFrom, dateTo, destination, offers, type = PointType.TAXI }) => {
+const NO_OFFERS_TYPES = ['sightseeing', 'transport'];
+
+const createOptionsMarkup = (destinations) => {
+  return destinations.map((item) => `<option value="${item.name}"></option>`);
+};
+
+const createPointTypeMarkup = (types, currentType) => {
+  return types
+    .map((item) => {
+      return `<div class="event__type-item">
+  <input id="event-type-${item.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
+  value="${item.type}" ${item.type === currentType ? 'checked' : ''}>
+  <label class="event__type-label  event__type-label--${item.type}" for="event-type-${item.type}-1">${item.type}</label>
+</div>`;
+    })
+    .join(' ');
+};
+
+const checkOffers = (type) => {
+  return !NO_OFFERS_TYPES.some((item) => item === type);
+};
+
+const createPointEditTemplate = (
+  { basePrice, dateFrom, dateTo, destination, offers, type = PointType.TAXI },
+  isSaving,
+  isDeleting
+) => {
   const dateTimeStart = formatDate(dateFrom);
   const dateTimeEnd = formatDate(dateTo);
 
@@ -29,66 +55,7 @@ const createPointEditTemplate = ({ basePrice, dateFrom, dateTo, destination, off
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-
-              <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi"
-                ${type === PointType.TAXI ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus"
-                ${type === PointType.BUS ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train"
-                ${type === PointType.TRAIN ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship"
-                ${type === PointType.SHIP ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport"
-                ${type === PointType.TRANSPORT ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive"
-                ${type === PointType.DRIVE ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight"
-                ${type === PointType.FLIGHT ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in"
-                ${type === PointType.CHECK_IN ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing"
-                ${type === PointType.SIGHTSEEING ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant"
-                ${type === PointType.RESTAURANT ? 'checked' : ''}>
-                <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-              </div>
+              ${createPointTypeMarkup(offersData.getOffers(), type)}
             </fieldset>
           </div>
         </div>
@@ -100,17 +67,7 @@ const createPointEditTemplate = ({ basePrice, dateFrom, dateTo, destination, off
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
           value="${destination ? destination.name : ''}" list="destination-list-1" required>
           <datalist id="destination-list-1">
-            <option value="Singapore"></option>
-            <option value="Paris"></option>
-            <option value="Hong Kong"></option>
-            <option value="Zurich"></option>
-            <option value="Geneva"></option>
-            <option value="Osaka"></option>
-            <option value="Seoul"></option>
-            <option value="Copenhagen"></option>
-            <option value="New York"></option>
-            <option value="Tel Aviv"></option>
-            <option value="Los Angeles"></option>
+            ${createOptionsMarkup(destinationData.getDestinations())}
           </datalist>
         </div>
 
@@ -131,20 +88,17 @@ const createPointEditTemplate = ({ basePrice, dateFrom, dateTo, destination, off
           value="${basePrice ? basePrice : ''}" required>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${basePrice ? 'Delete' : 'Close'}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset">
+        ${basePrice ? (isDeleting ? 'Deleting...' : 'Delete') : 'Close'}</button>
         ${basePrice ? '<button class="event__rollup-btn event__rollup-btn--close" type="button">' : ''}
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
       <section class="event__details">
-
-        ${offers ? createOfferContainerMarkup(createOffersMarkup(offers)) : ''}
-
+        ${checkOffers(type) ? createOfferContainerMarkup(createOffersMarkup(offersData.getOffers(), offers, type)) : ''}
         ${destination ? createDestinationContainerMarkup(destination) : ''}
-
         ${destination ? createPictureContainerMarkup(destination.pictures) : ''}
-
       </section>
     </form>
   </li>
@@ -159,6 +113,7 @@ export default class PointEditView extends SmartView {
     this._startPicker = null;
     this._endPicker = null;
     this._dateState = null;
+    this._checkedOffers = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
@@ -168,6 +123,7 @@ export default class PointEditView extends SmartView {
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
     this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
     this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
     this._setStartPicker();
@@ -194,7 +150,6 @@ export default class PointEditView extends SmartView {
       this._endPicker = null;
     }
 
-    this._dateState = this._data.dateTo;
     this._endPicker = flatpickr(this.getElement().querySelector('.event__input--date-to'), {
       dateFormat: 'd/m/y H:i',
       enableTime: true,
@@ -260,30 +215,64 @@ export default class PointEditView extends SmartView {
 
   _destinationChangeHandler(evt) {
     evt.preventDefault();
-    this.updateData({
-      destination: { name: evt.target.value, description: getDescription(), pictures: getPictures() },
+    const destinations = destinationData.getDestinations();
+
+    const isTrueDestination = destinations.some((item) => {
+      return item.name === evt.target.value;
     });
-  }
 
-  _destinationKeydownHandler(evt) {
-    evt.preventDefault();
-
-    if (evt.code === 'Backspace') {
-      evt.target.value = '';
+    if (!isTrueDestination) {
+      return evt.target.setCustomValidity('This destination was not found');
     }
 
-    if (evt.code !== 'Backspace') {
-      return false;
-    }
+    const destination = destinations.filter((item) => item.name === evt.target.value)[0];
+    this.updateData({
+      destination: {
+        name: destination.name,
+        description: destination.description,
+        pictures: destination.pictures,
+      },
+    });
+
+    this._checkedOffers = null;
   }
 
   _routeTypeChangeHandler(evt) {
     evt.preventDefault();
-    this.updateData({ type: evt.target.value, offers: generateOffers() });
+
+    this.updateData({ type: evt.target.value, offers: [] });
+  }
+
+  _offersChangeHandler(evt) {
+    if (this._checkedOffers === null) {
+      this._checkedOffers = this._data.offers || [];
+    }
+
+    const isIncludeTargetOffer = this._checkedOffers.some((item) => item.title === evt.target.dataset.title);
+
+    const pointType = this._data.type || 'taxi';
+
+    const checkOffer = offersData
+      .getOffers()
+      .filter((item) => item.type === pointType)[0]
+      .offers.filter((item) => item.title === evt.target.dataset.title);
+
+    const isNewOffer = this._checkedOffers.every((item) => item.title !== checkOffer[0].title);
+
+    let checkedOffers = this._checkedOffers;
+    if (isNewOffer) {
+      checkedOffers = [...this._checkedOffers, ...checkOffer];
+      this._checkedOffers = checkedOffers;
+    }
+
+    if (isIncludeTargetOffer) {
+      this._checkedOffers = this._checkedOffers.filter((item) => item.title !== evt.target.dataset.title);
+    }
   }
 
   reset(point) {
     this.updateData(PointEditView.parsePointToData(point));
+    this._checkedOffers = null;
   }
 
   getTemplate() {
@@ -300,6 +289,7 @@ export default class PointEditView extends SmartView {
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
+    this._removeDisabledButtonNewEvent();
     this._callback.deleteClick(PointEditView.parseDataToPoint(this._data));
   }
 
@@ -312,21 +302,25 @@ export default class PointEditView extends SmartView {
     this.getElement()
       .querySelector('.event__input--destination')
       .addEventListener('change', this._destinationChangeHandler);
-    this.getElement()
-      .querySelector('.event__input--destination')
-      .addEventListener('keydown', this._destinationKeydownHandler);
     this.getElement().querySelector('.event__type-group').addEventListener('change', this._routeTypeChangeHandler);
     this.getElement().querySelector('.event__input--price').addEventListener('change', this._priceChangeHandler);
+    this.getElement().querySelector('.event__details').addEventListener('change', this._offersChangeHandler);
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
+    this.updateData({ offers: this._checkedOffers });
+    this._removeDisabledButtonNewEvent();
     this._callback.formSubmit(PointEditView.parseDataToPoint(this._data));
+  }
+
+  _removeDisabledButtonNewEvent() {
+    document.querySelector('.trip-main__event-add-btn').removeAttribute('disabled');
   }
 
   _closeClickHandler(evt) {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.closeClick();
   }
 
   setFormSubmitHandler(callback) {
@@ -335,11 +329,19 @@ export default class PointEditView extends SmartView {
   }
 
   static parsePointToData(point) {
-    return Object.assign({}, point);
+    return Object.assign({}, point, {
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    });
   }
 
   static parseDataToPoint(data) {
     data = Object.assign({}, data);
+
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
 
     return data;
   }

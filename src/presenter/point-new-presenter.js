@@ -2,8 +2,6 @@ import PointEditView from '../view/point-edit-view.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
 
-let id = 100;
-
 export default class PointNewPresenter {
   constructor(pointListContainer, changeData) {
     this._pointListContainer = pointListContainer;
@@ -41,8 +39,27 @@ export default class PointNewPresenter {
     document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
+  setSaving() {
+    this._pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._pointEditComponent.shake(resetFormState);
+  }
+
   _handleFormSubmit(point) {
-    this._changeData(UserAction.ADD_POINT, UpdateType.MINOR, Object.assign({ id: id++ }, point));
+    this._changeData(UserAction.ADD_POINT, UpdateType.MINOR, point);
     this.destroy();
   }
 
@@ -53,6 +70,7 @@ export default class PointNewPresenter {
   _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this._pointEditComponent._removeDisabledButtonNewEvent();
       this.destroy();
     }
   }
