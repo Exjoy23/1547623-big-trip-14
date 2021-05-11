@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { sortPointDay } from '../utils/point.js';
 import AbstractView from './abstract-view.js';
 
 const getTotalPrice = (points) => {
@@ -28,9 +29,10 @@ const getRoute = (points) => {
     ${points[points.length - 1].destination.name}`;
 };
 
-const createInfoTemplate = (points) => {
+const createInfoTemplate = (pointsData) => {
+  const points = pointsData.sort(sortPointDay);
   const dayStart = dayjs(points[0].dateFrom).format('MMM D');
-  const dayEnd = dayjs(points[points.length - 1].dateFrom).format('MMM D');
+  const dayEnd = dayjs(points[points.length - 1].dateTo).format('MMM D');
 
   return `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">

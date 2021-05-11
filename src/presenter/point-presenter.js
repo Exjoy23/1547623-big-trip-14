@@ -1,5 +1,5 @@
 import PointView from '../view/point-view.js';
-import PointEditView from '../view/point-edit-view.js';
+import EditPointView from '../view/edit-point-view.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
 
@@ -38,7 +38,7 @@ export default class PointPresenter {
     const prevPointEditComponent = this._pointEditComponent;
 
     this._pointComponent = new PointView(point);
-    this._pointEditComponent = new PointEditView(point);
+    this._pointEditComponent = new EditPointView(point);
 
     this._pointComponent.setEditClickHandler(this._handleEditClick);
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -104,11 +104,7 @@ export default class PointPresenter {
   }
 
   _handleFavoriteClick() {
-    this._changeData(
-      UserAction.UPDATE_POINT,
-      UpdateType.PATCH,
-      Object.assign({}, this._point, { isFavorite: !this._point.isFavorite })
-    );
+    this._changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, Object.assign({}, this._point, { isFavorite: !this._point.isFavorite }));
   }
 
   _replaceCardToForm() {
