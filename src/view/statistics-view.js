@@ -3,6 +3,7 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart-view.js';
 import { formatDuration } from '../utils/point.js';
+import { ChartSettings } from '../const.js';
 
 const getUniqueTypes = (points) => {
   const types = points.map((item) => item.type);
@@ -10,7 +11,7 @@ const getUniqueTypes = (points) => {
 };
 
 const getDataPrice = (points, types) => {
-  const data = Array(types.length).fill(0);
+  const data = Array(types.length).fill(null);
   types.forEach((type, index) => {
     points
       .filter((point) => point.type === type)
@@ -23,7 +24,7 @@ const getDataPrice = (points, types) => {
 };
 
 const getDataCount = (points, types) => {
-  const data = Array(types.length).fill(0);
+  const data = Array(types.length).fill(null);
   types.forEach((type, index) => {
     data[index] = points.filter((point) => point.type === type).length;
   });
@@ -39,22 +40,18 @@ const getDurationType = (points, type) => {
   return duration;
 };
 
-const renderMoneyChart = (moneyCtx, statsData) => {
-  const stats = statsData.sort((a, b) => b.price - a.price);
-  const labels = stats.map((item) => item.type.toUpperCase());
-  const data = stats.map((item) => item.price);
-
-  return new Chart(moneyCtx, {
+const getChartSettings = (labels, data, text, formatter) => {
+  return {
     plugins: [ChartDataLabels],
-    type: 'horizontalBar',
+    type: ChartSettings.TYPE,
     data: {
       labels,
       datasets: [
         {
           data,
-          backgroundColor: '#ffffff',
-          hoverBackgroundColor: '#ffffff',
-          anchor: 'start',
+          backgroundColor: ChartSettings.COLOR.WHITE,
+          hoverBackgroundColor: ChartSettings.COLOR.WHITE,
+          anchor: ChartSettings.ANCHOR.START,
         },
       ],
     },
@@ -62,58 +59,69 @@ const renderMoneyChart = (moneyCtx, statsData) => {
       plugins: {
         datalabels: {
           font: {
-            size: 13,
+            size: ChartSettings.DATA_FONT_SIZE,
           },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `€ ${val}`,
+          color: ChartSettings.COLOR.BLACK,
+          anchor: ChartSettings.ANCHOR.END,
+          align: ChartSettings.ALIGN,
+          formatter,
         },
       },
       title: {
-        display: true,
-        text: 'MONEY',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
+        display: ChartSettings.FLAG.TRUE,
+        text,
+        fontColor: ChartSettings.COLOR.BLACK,
+        fontSize: ChartSettings.TITLE_FONT_SIZE,
+        position: ChartSettings.TITLE_POSITION,
       },
       scales: {
         yAxes: [
           {
             ticks: {
-              fontColor: '#000000',
-              padding: 5,
-              fontSize: 13,
+              fontColor: ChartSettings.COLOR.BLACK,
+              padding: ChartSettings.TICKS_PADDING,
+              fontSize: ChartSettings.TICKS_FONT_SIZE,
             },
             gridLines: {
-              display: false,
-              drawBorder: false,
+              display: ChartSettings.FLAG.FALSE,
+              drawBorder: ChartSettings.FLAG.FALSE,
             },
-            barThickness: 44,
+            barThickness: ChartSettings.BAR_THICKNESS,
           },
         ],
         xAxes: [
           {
             ticks: {
-              display: false,
-              beginAtZero: true,
+              display: ChartSettings.FLAG.FALSE,
+              beginAtZero: ChartSettings.FLAG.TRUE,
             },
             gridLines: {
-              display: false,
-              drawBorder: false,
+              display: ChartSettings.FLAG.FALSE,
+              drawBorder: ChartSettings.FLAG.FALSE,
             },
-            minBarLength: 50,
+            minBarLength: ChartSettings.MIN_BAR_LENGTH,
           },
         ],
       },
       legend: {
-        display: false,
+        display: ChartSettings.FLAG.FALSE,
       },
       tooltips: {
-        enabled: false,
+        enabled: ChartSettings.FLAG.FALSE,
       },
     },
-  });
+  };
+};
+
+const renderMoneyChart = (moneyCtx, statsData) => {
+  const stats = statsData.sort((a, b) => b.price - a.price);
+  const labels = stats.map((item) => item.type.toUpperCase());
+  const data = stats.map((item) => item.price);
+
+  return new Chart(
+    moneyCtx,
+    getChartSettings(labels, data, ChartSettings.TEXT.MONEY, (val) => `€ ${val}`)
+  );
 };
 
 const renderTypeChart = (typeCtx, statsData) => {
@@ -121,76 +129,10 @@ const renderTypeChart = (typeCtx, statsData) => {
   const labels = stats.map((item) => item.type.toUpperCase());
   const data = stats.map((item) => item.count);
 
-  return new Chart(typeCtx, {
-    plugins: [ChartDataLabels],
-    type: 'horizontalBar',
-    data: {
-      labels,
-      datasets: [
-        {
-          data,
-          backgroundColor: '#ffffff',
-          hoverBackgroundColor: '#ffffff',
-          anchor: 'start',
-        },
-      ],
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13,
-          },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `${val}x`,
-        },
-      },
-      title: {
-        display: true,
-        text: 'TYPE',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
-      },
-      scales: {
-        yAxes: [
-          {
-            ticks: {
-              fontColor: '#000000',
-              padding: 5,
-              fontSize: 13,
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            barThickness: 44,
-          },
-        ],
-        xAxes: [
-          {
-            ticks: {
-              display: false,
-              beginAtZero: true,
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            minBarLength: 50,
-          },
-        ],
-      },
-      legend: {
-        display: false,
-      },
-      tooltips: {
-        enabled: false,
-      },
-    },
-  });
+  return new Chart(
+    typeCtx,
+    getChartSettings(labels, data, ChartSettings.TEXT.TYPE, (val) => `${val}x`)
+  );
 };
 
 const renderTimeSpendChart = (timeCtx, statsData) => {
@@ -198,76 +140,10 @@ const renderTimeSpendChart = (timeCtx, statsData) => {
   const labels = stats.map((item) => item.type.toUpperCase());
   const data = stats.map((item) => item.duration);
 
-  return new Chart(timeCtx, {
-    plugins: [ChartDataLabels],
-    type: 'horizontalBar',
-    data: {
-      labels,
-      datasets: [
-        {
-          data,
-          backgroundColor: '#ffffff',
-          hoverBackgroundColor: '#ffffff',
-          anchor: 'start',
-        },
-      ],
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13,
-          },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => formatDuration(val),
-        },
-      },
-      title: {
-        display: true,
-        text: 'TIME-SPEND',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
-      },
-      scales: {
-        yAxes: [
-          {
-            ticks: {
-              fontColor: '#000000',
-              padding: 5,
-              fontSize: 13,
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            barThickness: 44,
-          },
-        ],
-        xAxes: [
-          {
-            ticks: {
-              display: false,
-              beginAtZero: true,
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            minBarLength: 50,
-          },
-        ],
-      },
-      legend: {
-        display: false,
-      },
-      tooltips: {
-        enabled: false,
-      },
-    },
-  });
+  return new Chart(
+    timeCtx,
+    getChartSettings(labels, data, ChartSettings.TEXT.TIME_SPEND, (val) => formatDuration(val))
+  );
 };
 
 const createStatisticsTemplate = () => {
@@ -303,7 +179,7 @@ export default class StatisticsView extends SmartView {
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._data);
+    return createStatisticsTemplate();
   }
 
   restoreHandlers() {

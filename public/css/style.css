@@ -1004,3 +1004,7 @@ main {
 .shake {
   animation: shake 0.6s;
 }
+
+.hide-line::after {
+  display: none;
+}

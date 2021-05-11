@@ -14,6 +14,7 @@ import InfoPresenter from './presenter/info-presenter.js';
 
 const AUTHORIZATION = 'Basic exjoy2333333333333333333333';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
+const HIDE_LINE_CLASS = 'hide-line';
 
 const api = new Api(END_POINT, AUTHORIZATION);
 
@@ -22,6 +23,7 @@ const menuElement = mainElement.querySelector('.trip-controls__navigation');
 const filterElement = mainElement.querySelector('.trip-controls__filters');
 const boardContainer = mainElement.querySelector('.board-container');
 const tripMainElement = mainElement.querySelector('.trip-main');
+const pageContainerElements = mainElement.querySelectorAll('.page-body__container');
 
 const pointsModel = new PointsModel();
 const filterModel = new FilterModel();
@@ -56,6 +58,7 @@ const handleMenuClick = (menuItem) => {
       filterPresenter.removeDisabledFilters();
       newPointButtonComponent.removeDisabled();
       filterPresenter.init();
+      pageContainerElements.forEach((item) => item.classList.remove(HIDE_LINE_CLASS));
       break;
     case MenuItem.STATISTICS:
       boardPresenter.destroy();
@@ -63,6 +66,7 @@ const handleMenuClick = (menuItem) => {
       render(boardContainer, statisticsComponent, RenderPosition.BEFOREEND);
       filterPresenter.setDisabledFilters();
       newPointButtonComponent.setDisabled();
+      pageContainerElements.forEach((item) => item.classList.add(HIDE_LINE_CLASS));
       break;
   }
 };
