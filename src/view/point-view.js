@@ -1,9 +1,7 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
 import { PointType } from '../const.js';
-
-const MINUTES_IN_HOUR = 60;
-const HOURS_IN_DAY = 24;
+import { formatDuration } from '../utils/point.js';
 
 const createOfferMarkup = (offer) => {
   return `<li class="event__offer">
@@ -14,40 +12,13 @@ const createOfferMarkup = (offer) => {
   `;
 };
 
-const showTime = (day, hour, minute) => {
-  if (day) {
-    return `${day}D ${hour ? hour : '00'}H ${minute ? minute : '00'}M`;
-  }
-
-  if (hour) {
-    return `${hour}H ${minute ? minute : '00'}M`;
-  }
-
-  if (minute) {
-    return `${minute}M`;
-  }
-
-  return '00M';
-};
-
-const createPointTemplate = ({
-  basePrice,
-  dateFrom,
-  dateTo,
-  destination,
-  isFavorite,
-  offers,
-  type = PointType.TAXI,
-}) => {
+const createPointTemplate = ({ basePrice, dateFrom, dateTo, destination, isFavorite, offers, type = PointType.TAXI }) => {
   const dateTimeStart = dayjs(dateFrom).format('YYYY-MM-DDTHH:mm');
   const dateTimeEnd = dayjs(dateTo).format('YYYY-MM-DDTHH:mm');
   const dayStart = dayjs(dateFrom).format('D MMM');
   const dateStart = dayjs(dateFrom).format('HH:mm');
   const dateEnd = dayjs(dateTo).format('HH:mm');
   const duration = dayjs(dateTo).diff(dayjs(dateFrom), 'm');
-  const durationDay = Math.floor(duration / MINUTES_IN_HOUR / HOURS_IN_DAY);
-  const durationHour = Math.floor((duration - durationDay * HOURS_IN_DAY * MINUTES_IN_HOUR) / MINUTES_IN_HOUR);
-  const durationMinute = duration % MINUTES_IN_HOUR;
 
   const offersMarkup = offers.length ? offers.map((item) => createOfferMarkup(item)).join(' ') : '';
 
@@ -65,7 +36,7 @@ const createPointTemplate = ({
           <time class="event__end-time" datetime="${dateTimeEnd}">${dateEnd}</time>
         </p>
         <p class="event__duration">
-          ${showTime(durationDay, durationHour, durationMinute)}
+          ${formatDuration(duration)}
         </p>
       </div>
       <p class="event__price">

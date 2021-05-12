@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
+const MINUTES_IN_HOUR = 60;
+const HOURS_IN_DAY = 24;
 let id = 1;
 
 const isCheckedOffer = (availableOffer, checkedOffers) => {
@@ -10,7 +12,7 @@ const isCheckedOffer = (availableOffer, checkedOffers) => {
   }
 };
 
-export const createOffersMarkup = (availableOffers, checkedOffers, type) => {
+export const createOffersMarkup = (availableOffers, checkedOffers, type, isSaving, isDeleting) => {
   if (availableOffers) {
     return availableOffers
       .filter((item) => item.type === type)[0]
@@ -19,7 +21,8 @@ export const createOffersMarkup = (availableOffers, checkedOffers, type) => {
       <div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox"
         name="event-offer-${item.title}" data-title="${item.title}"
-        ${isCheckedOffer(item, checkedOffers) ? 'checked' : ''}>
+        ${isCheckedOffer(item, checkedOffers) ? 'checked' : ''}
+        ${isSaving || isDeleting ? 'disabled' : ''}>
         <label class="event__offer-label" for="event-offer-${id++}">
           <span class="event__offer-title">${item.title}</span>
           &plus;&euro;&nbsp;
@@ -73,10 +76,34 @@ export const formatDate = (date) => {
   return dayjs(date).format('DD/MM/YY HH:mm');
 };
 
+export const sortPointDay = (pointA, pointB) => {
+  return new Date(pointA.dateFrom) - new Date(pointB.dateFrom);
+};
+
 export const sortPointTime = (pointA, pointB) => {
   return dayjs(pointB.dateTo).diff(dayjs(pointA.dateTo)) - dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
 };
 
 export const sortPointPrice = (priceA, priceB) => {
   return priceB.basePrice - priceA.basePrice;
+};
+
+export const formatDuration = (duration) => {
+  const day = Math.floor(duration / MINUTES_IN_HOUR / HOURS_IN_DAY);
+  const hour = Math.floor((duration - day * HOURS_IN_DAY * MINUTES_IN_HOUR) / MINUTES_IN_HOUR);
+  const minute = duration % MINUTES_IN_HOUR;
+
+  if (day) {
+    return `${day}D ${hour ? hour : '00'}H ${minute ? minute : '00'}M`;
+  }
+
+  if (hour) {
+    return `${hour}H ${minute ? minute : '00'}M`;
+  }
+
+  if (minute) {
+    return `${minute}M`;
+  }
+
+  return '00M';
 };

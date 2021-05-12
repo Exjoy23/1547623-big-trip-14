@@ -64,4 +64,22 @@ export default class FilterPresenter {
       },
     ];
   }
+
+  setDisabledFilters() {
+    this._filterComponent
+      .getElement()
+      .querySelectorAll('.trip-filters__filter-input')
+      .forEach((item) => {
+        item.setAttribute('disabled', true);
+      });
+  }
+
+  removeDisabledFilters() {
+    this._filterComponent
+      .getElement()
+      .querySelectorAll('.trip-filters__filter-input')
+      .forEach((item) => {
+        item.removeAttribute('disabled');
+      });
+  }
 }
