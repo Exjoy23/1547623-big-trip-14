@@ -1,7 +1,7 @@
 export const SortType = {
-  TIME: 'time',
-  PRICE: 'price',
-  DAY: 'day',
+  TIME: 'sort-time',
+  PRICE: 'sort-price',
+  DAY: 'sort-day',
 };
 
 export const FilterType = {
