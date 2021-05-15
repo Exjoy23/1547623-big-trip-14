@@ -4,19 +4,28 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
-import Api from './api.js';
+import Api from './api/api.js';
 import { render, RenderPosition, remove } from './utils/render.js';
 import { UpdateType, MenuItem } from './const.js';
 import Destination from './data/destination.js';
 import Offers from './data/offers.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import InfoPresenter from './presenter/info-presenter.js';
+import Store from './api/store.js';
+import Provider from './api/provider.js';
+import { isOnline } from './utils/common.js';
+import { toast } from './utils/toast.js';
 
-const AUTHORIZATION = 'Basic exjoy2333333333333333333333';
+const AUTHORIZATION = 'Basic exjoy2333333333111111';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 const HIDE_LINE_CLASS = 'hide-line';
+const STORE_PREFIX = 'big-trip-localstorage';
+const STORE_VER = 'v23';
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 
 const mainElement = document.querySelector('.page-body');
 const menuElement = mainElement.querySelector('.trip-controls__navigation');
@@ -29,16 +38,21 @@ const pointsModel = new PointsModel();
 const filterModel = new FilterModel();
 
 const menuComponent = new MenuView();
-const newPointButtonComponent = new NewPointButtonView();
+export const newPointButtonComponent = new NewPointButtonView();
 
 export const destinationData = new Destination();
 export const offersData = new Offers();
 
-const boardPresenter = new BoardPresenter(boardContainer, pointsModel, filterModel, api);
+const boardPresenter = new BoardPresenter(boardContainer, pointsModel, filterModel, apiWithProvider);
 const filterPresenter = new FilterPresenter(filterElement, filterModel, pointsModel);
 const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
 
 newPointButtonComponent.setClickHandler(() => {
+  if (!isOnline()) {
+    toast('You cannot create point offline');
+    return;
+  }
+
   boardPresenter.createPoint();
   newPointButtonComponent.setDisabled();
 });
@@ -73,25 +87,37 @@ const handleMenuClick = (menuItem) => {
 
 menuComponent.setMenuClickHandler(handleMenuClick);
 
-api
+apiWithProvider
   .getOffers()
   .then((offers) => {
     offersData.setOffers(offers);
   })
   .then(() => {
-    api.getDestinations().then((destinations) => {
+    apiWithProvider.getDestinations().then((destinations) => {
       destinationData.setDestinations(destinations);
     });
   })
   .then(() => {
-    api
-      .getPoints()
-      .then((points) => {
-        pointsModel.setPoints(UpdateType.INIT, points);
-        infoPresenter.init();
-        filterPresenter.init();
-      })
-      .catch((error) => {
-        throw new Error(error);
-      });
+    apiWithProvider.getPoints().then((points) => {
+      pointsModel.setPoints(UpdateType.INIT, points);
+      infoPresenter.init();
+      filterPresenter.init();
+    });
+  })
+  .catch(() => {
+    toast('Loading failure. Try again later.');
   });
+
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
+
+window.addEventListener('online', () => {
+  document.title = document.title.replace(' [offline]', '');
+  apiWithProvider.sync();
+});
+
+window.addEventListener('offline', () => {
+  toast('Connection lost');
+  document.title += ' [offline]';
+});

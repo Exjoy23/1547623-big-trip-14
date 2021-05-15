@@ -2,6 +2,7 @@ import FilterView from '../view/filter-view.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { filter } from '../utils/filter.js';
 import { FilterType, UpdateType } from '../const.js';
+import { newPointButtonComponent } from '../main.js';
 
 export default class FilterPresenter {
   constructor(filterContainer, filterModel, pointsModel) {
@@ -43,6 +44,7 @@ export default class FilterPresenter {
       return;
     }
 
+    newPointButtonComponent.removeDisabled();
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 

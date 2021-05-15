@@ -1,6 +1,8 @@
 import EditPointView from '../view/edit-point-view.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
+import { isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
 
 export default class NewPointPresenter {
   constructor(pointListContainer, changeData) {
@@ -59,15 +61,30 @@ export default class NewPointPresenter {
   }
 
   _handleFormSubmit(point) {
+    if (!isOnline()) {
+      toast('You cannot edit point offline');
+      return;
+    }
+
     this._changeData(UserAction.ADD_POINT, UpdateType.MINOR, point);
     this.destroy();
   }
 
   _handleDeleteClick() {
+    if (!isOnline()) {
+      toast('You cannot delete point offline');
+      return;
+    }
+
     this.destroy();
   }
 
   _escKeyDownHandler(evt) {
+    if (!isOnline()) {
+      toast('You cannot edit point offline');
+      return;
+    }
+
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this._pointEditComponent._removeDisabledButtonNewEvent();

@@ -9,6 +9,7 @@ import { render, RenderPosition, remove } from '../utils/render.js';
 import { sortPointTime, sortPointPrice, sortPointDay } from '../utils/point.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import { filter } from '../utils/filter.js';
+import { newPointButtonComponent } from '../main.js';
 
 export default class BoardPresenter {
   constructor(boardContainer, pointsModel, filterModel, api) {
@@ -146,6 +147,7 @@ export default class BoardPresenter {
       return;
     }
 
+    newPointButtonComponent.removeDisabled();
     this._currentSortType = sortType;
     this._clearBoard();
     this._renderBoard();

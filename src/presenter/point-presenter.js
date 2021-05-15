@@ -2,6 +2,9 @@ import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
+import { isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
+import { newPointButtonComponent } from '../main.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -104,6 +107,11 @@ export default class PointPresenter {
   }
 
   _handleFavoriteClick() {
+    if (!isOnline()) {
+      toast('You cannot edit point offline');
+      return;
+    }
+
     this._changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, Object.assign({}, this._point, { isFavorite: !this._point.isFavorite }));
   }
 
@@ -113,7 +121,7 @@ export default class PointPresenter {
     document.addEventListener('click', this._clickHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
-    this._pointEditComponent._removeDisabledButtonNewEvent();
+    newPointButtonComponent.removeDisabled();
   }
 
   _replaceFormToCard() {
@@ -142,14 +150,29 @@ export default class PointPresenter {
   }
 
   _handleEditClick() {
+    if (!isOnline()) {
+      toast('You cannot edit point offline');
+      return;
+    }
+
     this._replaceCardToForm();
   }
 
   _handleFormSubmit(update) {
+    if (!isOnline()) {
+      toast('You cannot edit point offline');
+      return;
+    }
+
     this._changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, update);
   }
 
   _handleDeleteClick(point) {
+    if (!isOnline()) {
+      toast('You cannot delete point offline');
+      return;
+    }
+
     this._changeData(UserAction.DELETE_POINT, UpdateType.MINOR, point);
   }
 }

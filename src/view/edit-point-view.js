@@ -4,6 +4,9 @@ import { PointType } from '../const.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import { destinationData, offersData } from '../main.js';
+import { isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
+import { newPointButtonComponent } from '../main.js';
 
 const NO_OFFERS_TYPES = ['sightseeing', 'transport'];
 const STATES = {
@@ -221,6 +224,12 @@ export default class EditPointView extends SmartView {
   }
 
   _destinationChangeHandler(evt) {
+    if (!isOnline()) {
+      toast('You cannot edit point offline');
+      evt.target.value = '';
+      return;
+    }
+
     evt.preventDefault();
     const destinations = destinationData.getDestinations();
 
@@ -243,6 +252,11 @@ export default class EditPointView extends SmartView {
   }
 
   _routeTypeChangeHandler(evt) {
+    if (!isOnline()) {
+      toast('You cannot edit point offline');
+      return;
+    }
+
     evt.preventDefault();
 
     this.updateData({ type: evt.target.value, offers: [] });
@@ -296,7 +310,7 @@ export default class EditPointView extends SmartView {
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
-    this._removeDisabledButtonNewEvent();
+    newPointButtonComponent.removeDisabled();
     this._callback.deleteClick(EditPointView.parseDataToPoint(this._data));
   }
 
@@ -315,12 +329,8 @@ export default class EditPointView extends SmartView {
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this.updateData({ offers: this._checkedOffers });
-    this._removeDisabledButtonNewEvent();
+    newPointButtonComponent.removeDisabled();
     this._callback.formSubmit(EditPointView.parseDataToPoint(this._data));
-  }
-
-  _removeDisabledButtonNewEvent() {
-    document.querySelector('.trip-main__event-add-btn').removeAttribute(STATES.DISABLED);
   }
 
   _closeClickHandler(evt) {
