@@ -1,6 +1,12 @@
 import PointsModel from '../model/points-model.js';
 import { isOnline } from '../utils/common.js';
 
+const ErrorMessage = {
+  ADD: 'Add point failed',
+  DELETE: 'Delete point failed',
+  SYNC: 'Sync data failed',
+};
+
 const getSyncedPoints = (items) => {
   return items.filter(({ success }) => success).map(({ payload }) => payload.point);
 };
@@ -62,7 +68,7 @@ export default class Provider {
       });
     }
 
-    return Promise.reject(new Error('Add point failed'));
+    return Promise.reject(new Error(ErrorMessage.ADD));
   }
 
   deletePoint(point) {
@@ -70,7 +76,7 @@ export default class Provider {
       return this._api.deletePoint(point).then(() => this._store.removeItem(point.id));
     }
 
-    return Promise.reject(new Error('Delete point failed'));
+    return Promise.reject(new Error(ErrorMessage.DELETE));
   }
 
   sync() {
@@ -87,6 +93,6 @@ export default class Provider {
       });
     }
 
-    return Promise.reject(new Error('Sync data failed'));
+    return Promise.reject(new Error(ErrorMessage.SYNC));
   }
 }

@@ -1,4 +1,5 @@
 import Abstract from '../view/abstract-view.js';
+import { ErrorMessage } from '../const.js';
 
 export const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
@@ -43,7 +44,7 @@ export const replace = (newChild, oldChild) => {
   const parent = oldChild.parentElement;
 
   if (parent === null || oldChild === null || newChild === null) {
-    throw new Error('Cannot replace unexisting elements');
+    throw new Error(ErrorMessage.REPLACE);
   }
 
   parent.replaceChild(newChild, oldChild);
@@ -55,7 +56,7 @@ export const remove = (component) => {
   }
 
   if (!(component instanceof Abstract)) {
-    throw new Error('Can remove only components');
+    throw new Error(ErrorMessage.REMOVE);
   }
 
   component.getElement().remove();

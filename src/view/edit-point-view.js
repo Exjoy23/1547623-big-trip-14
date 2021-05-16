@@ -1,24 +1,13 @@
 import SmartView from './smart-view.js';
 import { createOffersMarkup, createPictureContainerMarkup, formatDate, createOfferContainerMarkup, createDestinationContainerMarkup } from '../utils/point.js';
-import { PointType } from '../const.js';
+import { PointType, State, ButtonName, OfflineMessage } from '../const.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import { destinationData, offersData } from '../main.js';
-import { isOnline } from '../utils/common.js';
-import { toast } from '../utils/toast.js';
-import { newPointButtonComponent } from '../main.js';
+import { destinationData, offersData, newPointButtonComponent } from '../main.js';
+import { isOnline, getToast } from '../utils/common.js';
 
 const NO_OFFERS_TYPES = ['sightseeing', 'transport'];
-const STATES = {
-  DISABLED: 'disabled',
-  SAVING: 'Saving...',
-  DELETING: 'Deleting...',
-};
-const BUTTONS_NAMES = {
-  CLOSE: 'Close',
-  SAVE: 'Save',
-  DELETE: 'Delete',
-};
+const DESTINATION_NOT_FOUND_MESSAGE = 'This destination was not found';
 
 const createOptionsMarkup = (destinations) => {
   return destinations.map((item) => `<option value="${item.name}"></option>`);
@@ -40,7 +29,7 @@ const checkOffers = (type) => {
   return !NO_OFFERS_TYPES.some((item) => item === type);
 };
 
-const setDisabled = (saving, deleting) => (saving || deleting ? STATES.DISABLED : '');
+const setDisabled = (saving, deleting) => (saving || deleting ? State.DISABLED : '');
 
 const createPointEditTemplate = ({ basePrice, dateFrom, dateTo, destination, type = PointType.TAXI, isSaving, isDeleting }, offers) => {
   const dateTimeStart = formatDate(dateFrom);
@@ -97,10 +86,10 @@ const createPointEditTemplate = ({ basePrice, dateFrom, dateTo, destination, typ
           value="${basePrice ? basePrice : ''}" required ${setDisabled(isSaving, isDeleting)}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDeleting ? STATES.DISABLED : ''}>
-        ${isSaving ? STATES.SAVING : BUTTONS_NAMES.SAVE}</button>
-        <button class="event__reset-btn" type="reset" ${isSaving ? STATES.DISABLED : ''}>
-        ${basePrice ? (isDeleting ? STATES.DELETING : BUTTONS_NAMES.DELETE) : BUTTONS_NAMES.CLOSE}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDeleting ? State.DISABLED : ''}>
+        ${isSaving ? State.SAVING : ButtonName.SAVE}</button>
+        <button class="event__reset-btn" type="reset" ${isSaving ? State.DISABLED : ''}>
+        ${basePrice ? (isDeleting ? State.DELETING : ButtonName.DELETE) : ButtonName.CLOSE}</button>
         ${basePrice ? '<button class="event__rollup-btn event__rollup-btn--close" type="button">' : ''}
           <span class="visually-hidden">Open event</span>
         </button>
@@ -225,7 +214,7 @@ export default class EditPointView extends SmartView {
 
   _destinationChangeHandler(evt) {
     if (!isOnline()) {
-      toast('You cannot edit point offline');
+      getToast(OfflineMessage.EDIT);
       evt.target.value = '';
       return;
     }
@@ -238,7 +227,7 @@ export default class EditPointView extends SmartView {
     });
 
     if (!isTrueDestination) {
-      return evt.target.setCustomValidity('This destination was not found');
+      return evt.target.setCustomValidity(DESTINATION_NOT_FOUND_MESSAGE);
     }
 
     const destination = destinations.filter((item) => item.name === evt.target.value)[0];
@@ -253,7 +242,7 @@ export default class EditPointView extends SmartView {
 
   _routeTypeChangeHandler(evt) {
     if (!isOnline()) {
-      toast('You cannot edit point offline');
+      getToast(OfflineMessage.EDIT);
       return;
     }
 

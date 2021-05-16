@@ -70,3 +70,40 @@ export const ChartSettings = {
     FALSE: false,
   },
 };
+
+export const OfflineMessage = {
+  LOADING: 'Loading failure. Try again later.',
+  CREATE: 'You cannot create point offline',
+  CONNECTION: 'Connection lost',
+  EDIT: 'You cannot edit point offline',
+  DELETE: 'You cannot delete point offline',
+};
+
+export const State = {
+  DISABLED: 'disabled',
+  SAVING: 'Saving...',
+  DELETING: 'Deleting...',
+};
+
+export const ButtonName = {
+  CLOSE: 'Close',
+  SAVE: 'Save',
+  DELETE: 'Delete',
+};
+
+export const EvtKey = {
+  ESCAPE: 'Escape',
+  ESC: 'Esc',
+};
+
+export const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
+export const ErrorMessage = {
+  REPLACE: 'Cannot replace unexisting elements',
+  REMOVE: 'Can remove only components',
+  UPDATE: 'Cannot update unexisting point',
+  DELETE: 'Cannot delete unexisting point',
+};

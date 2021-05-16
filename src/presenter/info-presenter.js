@@ -18,15 +18,22 @@ export default class infoPresenter {
     const prevInfoComponent = this._infoComponent;
     this._points = this._pointsModel.getPoints();
 
-    this._infoComponent = new InfoView(this._points);
+    if (this._points.length) {
+      this._infoComponent = new InfoView(this._points);
 
-    if (prevInfoComponent === null) {
-      render(this._infoContainer, this._infoComponent, RenderPosition.AFTERBEGIN);
-      return;
+      if (prevInfoComponent === null) {
+        render(this._infoContainer, this._infoComponent, RenderPosition.AFTERBEGIN);
+        return;
+      }
+
+      replace(this._infoComponent, prevInfoComponent);
+      remove(prevInfoComponent);
     }
 
-    replace(this._infoComponent, prevInfoComponent);
-    remove(prevInfoComponent);
+    if (!this._points.length) {
+      remove(prevInfoComponent);
+      this._infoComponent = null;
+    }
   }
 
   _handleModelEvent() {
