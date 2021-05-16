@@ -1,4 +1,5 @@
 import Observer from '../utils/observer.js';
+import { PointType, ErrorMessage } from '../const.js';
 
 export default class PointsModel extends Observer {
   constructor() {
@@ -20,7 +21,7 @@ export default class PointsModel extends Observer {
     const index = this._points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
-      throw new Error('Cannot update unexisting point');
+      throw new Error(ErrorMessage.UPDATE);
     }
 
     this._points = [...this._points.slice(0, index), update, ...this._points.slice(index + 1)];
@@ -38,7 +39,7 @@ export default class PointsModel extends Observer {
     const index = this._points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
-      throw new Error('Cannot delete unexisting point');
+      throw new Error(ErrorMessage.DELETE);
     }
 
     this._points = [...this._points.slice(0, index), ...this._points.slice(index + 1)];
@@ -68,14 +69,14 @@ export default class PointsModel extends Observer {
 
   static adaptToServer(point) {
     const adaptedPoint = Object.assign({}, point, {
-      base_price: +point.basePrice,
-      date_from: point.dateFrom ? point.dateFrom : new Date(),
-      date_to: point.dateTo ? point.dateTo : new Date(),
+      'base_price': +point.basePrice,
+      'date_from': point.dateFrom ? point.dateFrom : new Date(),
+      'date_to': point.dateTo ? point.dateTo : new Date(),
       destination: point.destination,
       id: point.id,
-      is_favorite: point.isFavorite ? point.isFavorite : false,
+      'is_favorite': point.isFavorite ? point.isFavorite : false,
       offers: point.offers ? point.offers : [],
-      type: point.type ? point.type : 'taxi',
+      type: point.type ? point.type : PointType.TAXI,
     });
 
     delete adaptedPoint.basePrice;

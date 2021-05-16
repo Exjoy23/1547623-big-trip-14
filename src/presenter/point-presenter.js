@@ -1,15 +1,9 @@
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
-import { UserAction, UpdateType } from '../const.js';
-import { isOnline } from '../utils/common.js';
-import { toast } from '../utils/toast.js';
+import { UserAction, UpdateType, OfflineMessage, EvtKey, Mode } from '../const.js';
+import { isOnline, getToast } from '../utils/common.js';
 import { newPointButtonComponent } from '../main.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 
 export const State = {
   SAVING: 'SAVING',
@@ -108,7 +102,7 @@ export default class PointPresenter {
 
   _handleFavoriteClick() {
     if (!isOnline()) {
-      toast('You cannot edit point offline');
+      getToast(OfflineMessage.EDIT);
       return;
     }
 
@@ -132,7 +126,7 @@ export default class PointPresenter {
   }
 
   _escKeyDownHandler(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (evt.key === EvtKey.ESCAPE || evt.key === EvtKey.ESC) {
       this._closeFormWithoutSave(evt);
     }
   }
@@ -151,7 +145,7 @@ export default class PointPresenter {
 
   _handleEditClick() {
     if (!isOnline()) {
-      toast('You cannot edit point offline');
+      getToast(OfflineMessage.EDIT);
       return;
     }
 
@@ -160,7 +154,7 @@ export default class PointPresenter {
 
   _handleFormSubmit(update) {
     if (!isOnline()) {
-      toast('You cannot edit point offline');
+      getToast(OfflineMessage.EDIT);
       return;
     }
 
@@ -169,7 +163,7 @@ export default class PointPresenter {
 
   _handleDeleteClick(point) {
     if (!isOnline()) {
-      toast('You cannot delete point offline');
+      getToast(OfflineMessage.DELETE);
       return;
     }
 

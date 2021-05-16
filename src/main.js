@@ -6,22 +6,22 @@ import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
 import Api from './api/api.js';
 import { render, RenderPosition, remove } from './utils/render.js';
-import { UpdateType, MenuItem } from './const.js';
+import { UpdateType, MenuItem, OfflineMessage } from './const.js';
 import Destination from './data/destination.js';
 import Offers from './data/offers.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import InfoPresenter from './presenter/info-presenter.js';
 import Store from './api/store.js';
 import Provider from './api/provider.js';
-import { isOnline } from './utils/common.js';
-import { toast } from './utils/toast.js';
+import { isOnline, getToast } from './utils/common.js';
 
-const AUTHORIZATION = 'Basic exjoy2333333333111111';
+const AUTHORIZATION = 'Basic exjoy233333333333311111111';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 const HIDE_LINE_CLASS = 'hide-line';
 const STORE_PREFIX = 'big-trip-localstorage';
 const STORE_VER = 'v23';
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+const OFFLINE_TITLE = ' [offline]';
 
 const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
@@ -49,7 +49,7 @@ const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
 
 newPointButtonComponent.setClickHandler(() => {
   if (!isOnline()) {
-    toast('You cannot create point offline');
+    getToast(OfflineMessage.CREATE);
     return;
   }
 
@@ -105,7 +105,7 @@ apiWithProvider
     });
   })
   .catch(() => {
-    toast('Loading failure. Try again later.');
+    getToast(OfflineMessage.LOADING);
   });
 
 window.addEventListener('load', () => {
@@ -113,11 +113,11 @@ window.addEventListener('load', () => {
 });
 
 window.addEventListener('online', () => {
-  document.title = document.title.replace(' [offline]', '');
+  document.title = document.title.replace(OFFLINE_TITLE, '');
   apiWithProvider.sync();
 });
 
 window.addEventListener('offline', () => {
-  toast('Connection lost');
-  document.title += ' [offline]';
+  getToast(OfflineMessage.CONNECTION);
+  document.title += OFFLINE_TITLE;
 });
