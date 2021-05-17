@@ -1,7 +1,7 @@
 import EditPointView from '../view/edit-point-view.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { UserAction, UpdateType, OfflineMessage, EvtKey } from '../const.js';
-import { isOnline, getToast } from '../utils/common.js';
+import { isOnline, setToast } from '../utils/common.js';
 
 export default class NewPointPresenter {
   constructor(pointListContainer, changeData) {
@@ -61,7 +61,7 @@ export default class NewPointPresenter {
 
   _handleFormSubmit(point) {
     if (!isOnline()) {
-      getToast(OfflineMessage.EDIT);
+      setToast(OfflineMessage.EDIT);
       return;
     }
 
@@ -71,7 +71,7 @@ export default class NewPointPresenter {
 
   _handleDeleteClick() {
     if (!isOnline()) {
-      getToast(OfflineMessage.DELETE);
+      setToast(OfflineMessage.DELETE);
       return;
     }
 
@@ -80,7 +80,7 @@ export default class NewPointPresenter {
 
   _escKeyDownHandler(evt) {
     if (!isOnline()) {
-      getToast(OfflineMessage.EDIT);
+      setToast(OfflineMessage.EDIT);
       return;
     }
 

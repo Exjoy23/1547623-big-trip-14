@@ -1,5 +1,7 @@
 import AbstractView from './abstract-view.js';
 
+const DISABLED_ATTRIBUTE = 'disabled';
+
 const createNewPointButtonTemplate = () => {
   return '<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button" >New event</button>';
 };
@@ -26,10 +28,10 @@ export default class NewPointButtonView extends AbstractView {
   }
 
   setDisabled() {
-    this.getElement().setAttribute('disabled', true);
+    this.getElement().setAttribute(DISABLED_ATTRIBUTE, true);
   }
 
   removeDisabled() {
-    this.getElement().removeAttribute('disabled');
+    this.getElement().removeAttribute(DISABLED_ATTRIBUTE);
   }
 }

@@ -13,9 +13,9 @@ import NewPointButtonView from './view/new-point-button-view.js';
 import InfoPresenter from './presenter/info-presenter.js';
 import Store from './api/store.js';
 import Provider from './api/provider.js';
-import { isOnline, getToast } from './utils/common.js';
+import { isOnline, setToast } from './utils/common.js';
 
-const AUTHORIZATION = 'Basic exjoy233333333333311111111';
+const AUTHORIZATION = 'Basic exjoy233333333333333111111';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 const HIDE_LINE_CLASS = 'hide-line';
 const STORE_PREFIX = 'big-trip-localstorage';
@@ -49,7 +49,7 @@ const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
 
 newPointButtonComponent.setClickHandler(() => {
   if (!isOnline()) {
-    getToast(OfflineMessage.CREATE);
+    setToast(OfflineMessage.CREATE);
     return;
   }
 
@@ -105,7 +105,7 @@ apiWithProvider
     });
   })
   .catch(() => {
-    getToast(OfflineMessage.LOADING);
+    setToast(OfflineMessage.LOADING);
   });
 
 window.addEventListener('load', () => {
@@ -118,6 +118,6 @@ window.addEventListener('online', () => {
 });
 
 window.addEventListener('offline', () => {
-  getToast(OfflineMessage.CONNECTION);
+  setToast(OfflineMessage.CONNECTION);
   document.title += OFFLINE_TITLE;
 });

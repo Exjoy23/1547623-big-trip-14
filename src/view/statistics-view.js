@@ -120,7 +120,7 @@ const renderMoneyChart = (moneyCtx, statsData) => {
 
   return new Chart(
     moneyCtx,
-    getChartSettings(labels, data, ChartSettings.TEXT.MONEY, (val) => `€ ${val}`)
+    getChartSettings(labels, data, ChartSettings.TEXT.MONEY, (val) => `€ ${val}`),
   );
 };
 
@@ -131,7 +131,7 @@ const renderTypeChart = (typeCtx, statsData) => {
 
   return new Chart(
     typeCtx,
-    getChartSettings(labels, data, ChartSettings.TEXT.TYPE, (val) => `${val}x`)
+    getChartSettings(labels, data, ChartSettings.TEXT.TYPE, (val) => `${val}x`),
   );
 };
 
@@ -142,7 +142,7 @@ const renderTimeSpendChart = (timeCtx, statsData) => {
 
   return new Chart(
     timeCtx,
-    getChartSettings(labels, data, ChartSettings.TEXT.TIME_SPEND, (val) => formatDuration(val))
+    getChartSettings(labels, data, ChartSettings.TEXT.TIME_SPEND, (val) => formatDuration(val)),
   );
 };
 

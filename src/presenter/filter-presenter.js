@@ -4,6 +4,8 @@ import { filter } from '../utils/filter.js';
 import { FilterType, UpdateType } from '../const.js';
 import { newPointButtonComponent } from '../main.js';
 
+const ATTRIBUTE_DISABLED = 'disabled';
+
 export default class FilterPresenter {
   constructor(filterContainer, filterModel, pointsModel) {
     this._filterContainer = filterContainer;
@@ -72,7 +74,7 @@ export default class FilterPresenter {
       .getElement()
       .querySelectorAll('.trip-filters__filter-input')
       .forEach((item) => {
-        item.setAttribute('disabled', true);
+        item.setAttribute(ATTRIBUTE_DISABLED, true);
       });
   }
 
@@ -81,7 +83,7 @@ export default class FilterPresenter {
       .getElement()
       .querySelectorAll('.trip-filters__filter-input')
       .forEach((item) => {
-        item.removeAttribute('disabled');
+        item.removeAttribute(ATTRIBUTE_DISABLED);
       });
   }
 }

@@ -2,7 +2,7 @@ import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { UserAction, UpdateType, OfflineMessage, EvtKey, Mode } from '../const.js';
-import { isOnline, getToast } from '../utils/common.js';
+import { isOnline, setToast } from '../utils/common.js';
 import { newPointButtonComponent } from '../main.js';
 
 export const State = {
@@ -102,7 +102,7 @@ export default class PointPresenter {
 
   _handleFavoriteClick() {
     if (!isOnline()) {
-      getToast(OfflineMessage.EDIT);
+      setToast(OfflineMessage.EDIT);
       return;
     }
 
@@ -145,7 +145,7 @@ export default class PointPresenter {
 
   _handleEditClick() {
     if (!isOnline()) {
-      getToast(OfflineMessage.EDIT);
+      setToast(OfflineMessage.EDIT);
       return;
     }
 
@@ -154,7 +154,7 @@ export default class PointPresenter {
 
   _handleFormSubmit(update) {
     if (!isOnline()) {
-      getToast(OfflineMessage.EDIT);
+      setToast(OfflineMessage.EDIT);
       return;
     }
 
@@ -163,7 +163,7 @@ export default class PointPresenter {
 
   _handleDeleteClick(point) {
     if (!isOnline()) {
-      getToast(OfflineMessage.DELETE);
+      setToast(OfflineMessage.DELETE);
       return;
     }
 

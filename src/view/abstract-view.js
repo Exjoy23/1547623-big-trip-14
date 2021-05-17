@@ -1,18 +1,22 @@
 import { createElement } from '../utils/render.js';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
+const ErrorMessage = {
+  CANNOT_INSTANTIATE: 'Cannot instantiate AbstractView, only concrete one.',
+  NOT_IMPLEMENTED: 'AbstractView method not implemented: getTemplate',
+};
 
 export default class AbstractView {
   constructor() {
     if (new.target === AbstractView) {
-      throw new Error('Cannot instantiate AbstractView, only concrete one.');
+      throw new Error(ErrorMessage.CANNOT_INSTANTIATE);
     }
     this._element = null;
     this._callback = {};
   }
 
   getTemplate() {
-    throw new Error('AbstractView method not implemented: getTemplate');
+    throw new Error(ErrorMessage.NOT_IMPLEMENTED);
   }
 
   getElement() {

@@ -15,7 +15,7 @@ const toastContainer = document.createElement('div');
 toastContainer.classList.add('toast-container');
 document.body.append(toastContainer);
 
-export const getToast = (message) => {
+export const setToast = (message) => {
   const toastItem = document.createElement('div');
   toastItem.textContent = message;
   toastItem.classList.add('toast-item');

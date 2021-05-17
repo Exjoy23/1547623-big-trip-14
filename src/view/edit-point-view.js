@@ -4,7 +4,7 @@ import { PointType, State, ButtonName, OfflineMessage } from '../const.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import { destinationData, offersData, newPointButtonComponent } from '../main.js';
-import { isOnline, getToast } from '../utils/common.js';
+import { isOnline, setToast } from '../utils/common.js';
 
 const NO_OFFERS_TYPES = ['sightseeing', 'transport'];
 const DESTINATION_NOT_FOUND_MESSAGE = 'This destination was not found';
@@ -138,7 +138,7 @@ export default class EditPointView extends SmartView {
     this._startPicker = flatpickr(this.getElement().querySelector('.event__input--date-from'), {
       dateFormat: 'd/m/y H:i',
       enableTime: true,
-      time_24hr: true,
+      'time_24hr': true,
       onChange: this._dateFromChangeHandler,
     });
   }
@@ -152,7 +152,7 @@ export default class EditPointView extends SmartView {
     this._endPicker = flatpickr(this.getElement().querySelector('.event__input--date-to'), {
       dateFormat: 'd/m/y H:i',
       enableTime: true,
-      time_24hr: true,
+      'time_24hr': true,
       minDate: this._data.dateFrom || new Date(),
       onChange: this._dateToChangeHandler,
     });
@@ -163,7 +163,7 @@ export default class EditPointView extends SmartView {
       {
         dateFrom: userDate,
       },
-      true
+      true,
     );
 
     this._endPicker.set('minDate', userDate);
@@ -177,7 +177,7 @@ export default class EditPointView extends SmartView {
         {
           dateTo: userDate,
         },
-        true
+        true,
       );
     }
   }
@@ -189,7 +189,7 @@ export default class EditPointView extends SmartView {
       {
         dateTo: userDate,
       },
-      true
+      true,
     );
   }
 
@@ -214,7 +214,7 @@ export default class EditPointView extends SmartView {
 
   _destinationChangeHandler(evt) {
     if (!isOnline()) {
-      getToast(OfflineMessage.EDIT);
+      setToast(OfflineMessage.EDIT);
       evt.target.value = '';
       return;
     }
@@ -242,7 +242,7 @@ export default class EditPointView extends SmartView {
 
   _routeTypeChangeHandler(evt) {
     if (!isOnline()) {
-      getToast(OfflineMessage.EDIT);
+      setToast(OfflineMessage.EDIT);
       return;
     }
 
