@@ -45,7 +45,7 @@ export default class NewPointPresenter {
     this._pointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     render(this._pointListContainer, this._pointEditComponent, RenderPosition.AFTERBEGIN);
-
+    this._pointEditComponent.getElement().querySelector('.event__input--destination').focus();
     document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
