@@ -1,7 +1,7 @@
 import Observer from '../utils/observer.js';
 import { PointType, ErrorMessage } from '../const.js';
 
-export default class PointsModel extends Observer {
+export default class StationModel extends Observer {
   constructor() {
     super();
     this._points = [];

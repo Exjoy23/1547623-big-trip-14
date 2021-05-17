@@ -2,6 +2,7 @@ import EditPointView from '../view/edit-point-view.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { UserAction, UpdateType, OfflineMessage, EvtKey } from '../const.js';
 import { isOnline, setToast } from '../utils/common.js';
+import { newPointButtonComponent } from '../main.js';
 
 export default class NewPointPresenter {
   constructor(pointListContainer, changeData) {
@@ -13,6 +14,25 @@ export default class NewPointPresenter {
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+  }
+
+  setSaving() {
+    this._pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._pointEditComponent.shake(resetFormState);
   }
 
   init() {
@@ -38,25 +58,6 @@ export default class NewPointPresenter {
     this._pointEditComponent = null;
 
     document.removeEventListener('keydown', this._escKeyDownHandler);
-  }
-
-  setSaving() {
-    this._pointEditComponent.updateData({
-      isDisabled: true,
-      isSaving: true,
-    });
-  }
-
-  setAborting() {
-    const resetFormState = () => {
-      this._pointEditComponent.updateData({
-        isDisabled: false,
-        isSaving: false,
-        isDeleting: false,
-      });
-    };
-
-    this._pointEditComponent.shake(resetFormState);
   }
 
   _handleFormSubmit(point) {
@@ -86,7 +87,7 @@ export default class NewPointPresenter {
 
     if (evt.key === EvtKey.ESCAPE || evt.key === EvtKey.ESC) {
       evt.preventDefault();
-      this._pointEditComponent._removeDisabledButtonNewEvent();
+      newPointButtonComponent.removeDisabled();
       this.destroy();
     }
   }

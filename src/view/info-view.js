@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import { sortPointDay } from '../utils/point.js';
 import AbstractView from './abstract-view.js';
 
+const MAX_POINTS_SHOW = 3;
+
 const getTotalPrice = (points) => {
   let totalPrice = 0;
 
@@ -17,7 +19,7 @@ const getTotalPrice = (points) => {
 };
 
 const getRoute = (points) => {
-  if (points.length <= 3) {
+  if (points.length <= MAX_POINTS_SHOW) {
     const point1 = points[0] ? points[0].destination.name : '';
     const point2 = points[1] ? ' &mdash; ' + points[1].destination.name : '';
     const point3 = points[2] ? ' &mdash; ' + points[2].destination.name : '';

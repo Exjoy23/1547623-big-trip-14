@@ -16,6 +16,7 @@ export default class PointPresenter {
     this._changeData = changeData;
     this._changeMode = changeMode;
 
+    this._point = null;
     this._pointComponent = null;
     this._pointEditComponent = null;
     this._mode = Mode.DEFAULT;
@@ -26,6 +27,35 @@ export default class PointPresenter {
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+  }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._pointEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this._pointEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this._pointComponent.shake(resetFormState);
+        this._pointEditComponent.shake(resetFormState);
+        break;
+    }
   }
 
   init(point) {
@@ -71,51 +101,18 @@ export default class PointPresenter {
     }
   }
 
-  setViewState(state) {
-    const resetFormState = () => {
-      this._pointEditComponent.updateData({
-        isDisabled: false,
-        isSaving: false,
-        isDeleting: false,
-      });
-    };
-
-    switch (state) {
-      case State.SAVING:
-        this._pointEditComponent.updateData({
-          isDisabled: true,
-          isSaving: true,
-        });
-        break;
-      case State.DELETING:
-        this._pointEditComponent.updateData({
-          isDisabled: true,
-          isDeleting: true,
-        });
-        break;
-      case State.ABORTING:
-        this._pointComponent.shake(resetFormState);
-        this._pointEditComponent.shake(resetFormState);
-        break;
-    }
-  }
-
   _handleFavoriteClick() {
-    if (!isOnline()) {
-      setToast(OfflineMessage.EDIT);
-      return;
-    }
-
     this._changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, Object.assign({}, this._point, { isFavorite: !this._point.isFavorite }));
   }
 
   _replaceCardToForm() {
+    newPointButtonComponent.removeDisabled();
+    this._pointEditComponent.updateData({});
     replace(this._pointEditComponent, this._pointComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
     document.addEventListener('click', this._clickHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
-    newPointButtonComponent.removeDisabled();
   }
 
   _replaceFormToCard() {

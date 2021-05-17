@@ -9,17 +9,12 @@ const createNewPointButtonTemplate = () => {
 export default class NewPointButtonView extends AbstractView {
   constructor() {
     super();
-
+    this._active = false;
     this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createNewPointButtonTemplate();
-  }
-
-  _clickHandler(evt) {
-    evt.preventDefault();
-    this._callback._click(evt.target.value);
   }
 
   setClickHandler(callback) {
@@ -29,9 +24,20 @@ export default class NewPointButtonView extends AbstractView {
 
   setDisabled() {
     this.getElement().setAttribute(DISABLED_ATTRIBUTE, true);
+    this._active = true;
   }
 
   removeDisabled() {
     this.getElement().removeAttribute(DISABLED_ATTRIBUTE);
+    this._active = false;
+  }
+
+  isActive() {
+    return this._active;
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback._click(evt.target.value);
   }
 }

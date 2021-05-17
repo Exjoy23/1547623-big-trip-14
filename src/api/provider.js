@@ -1,4 +1,4 @@
-import PointsModel from '../model/points-model.js';
+import StationModel from '../model/station-model.js';
 import { isOnline } from '../utils/common.js';
 
 const ErrorMessage = {
@@ -20,7 +20,7 @@ export default class Provider {
   getPoints() {
     if (isOnline()) {
       return this._api.getPoints().then((points) => {
-        const items = points.map(PointsModel.adaptToServer);
+        const items = points.map(StationModel.adaptToServer);
         this._store.setItems(items);
         return points;
       });
@@ -28,7 +28,7 @@ export default class Provider {
 
     const storePoints = Object.values(this._store.getItems());
 
-    return Promise.resolve(storePoints.map(PointsModel.adaptToClient));
+    return Promise.resolve(storePoints.map(StationModel.adaptToClient));
   }
 
   getOffers() {
@@ -50,12 +50,12 @@ export default class Provider {
   updatePoint(point) {
     if (isOnline()) {
       return this._api.updatePoint(point).then((updatedPoint) => {
-        this._store.setItem(updatedPoint.id, PointsModel.adaptToServer(updatedPoint));
+        this._store.setItem(updatedPoint.id, StationModel.adaptToServer(updatedPoint));
         return updatedPoint;
       });
     }
 
-    this._store.setItem(point.id, PointsModel.adaptToServer(Object.assign({}, point)));
+    this._store.setItem(point.id, StationModel.adaptToServer(Object.assign({}, point)));
 
     return Promise.resolve(point);
   }
@@ -63,7 +63,7 @@ export default class Provider {
   addPoint(point) {
     if (isOnline()) {
       return this._api.addPoint(point).then((newPoint) => {
-        this._store.setItem(newPoint.id, PointsModel.adaptToServer(newPoint));
+        this._store.setItem(newPoint.id, StationModel.adaptToServer(newPoint));
         return newPoint;
       });
     }

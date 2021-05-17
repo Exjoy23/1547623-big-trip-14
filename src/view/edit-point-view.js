@@ -89,8 +89,8 @@ const createPointEditTemplate = ({ basePrice, dateFrom, dateTo, destination, typ
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDeleting ? State.DISABLED : ''}>
         ${isSaving ? State.SAVING : ButtonName.SAVE}</button>
         <button class="event__reset-btn" type="reset" ${isSaving ? State.DISABLED : ''}>
-        ${basePrice ? (isDeleting ? State.DELETING : ButtonName.DELETE) : ButtonName.CLOSE}</button>
-        ${basePrice ? '<button class="event__rollup-btn event__rollup-btn--close" type="button">' : ''}
+        ${!newPointButtonComponent.isActive() ? (isDeleting ? State.DELETING : ButtonName.DELETE) : ButtonName.CLOSE}</button>
+        ${!newPointButtonComponent.isActive() ? '<button class="event__rollup-btn event__rollup-btn--close" type="button">' : ''}
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
@@ -127,6 +127,47 @@ export default class EditPointView extends SmartView {
     this._setInnerHandlers();
     this._setStartPicker();
     this._setEndPicker();
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._formDeleteClickHandler);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('.event--edit').addEventListener('submit', this._formSubmitHandler);
+  }
+
+  getTemplate() {
+    return createPointEditTemplate(this._data, this._checkedOffers);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._startPicker) {
+      this._startPicker.destroy();
+      this._startPicker = null;
+    }
+
+    if (this._endPicker) {
+      this._endPicker.destroy();
+      this._endPicker = null;
+    }
+  }
+
+  reset(point) {
+    this._checkedOffers = this._data.offers;
+    this.updateData(EditPointView.parsePointToData(point));
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setStartPicker();
+    this._setEndPicker();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setStartPicker() {
@@ -191,20 +232,6 @@ export default class EditPointView extends SmartView {
       },
       true,
     );
-  }
-
-  removeElement() {
-    super.removeElement();
-
-    if (this._startPicker) {
-      this._startPicker.destroy();
-      this._startPicker = null;
-    }
-
-    if (this._endPicker) {
-      this._endPicker.destroy();
-      this._endPicker = null;
-    }
   }
 
   _priceChangeHandler(evt) {
@@ -280,32 +307,10 @@ export default class EditPointView extends SmartView {
     }
   }
 
-  reset(point) {
-    this._checkedOffers = this._data.offers;
-    this.updateData(EditPointView.parsePointToData(point));
-  }
-
-  getTemplate() {
-    return createPointEditTemplate(this._data, this._checkedOffers);
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this._setStartPicker();
-    this._setEndPicker();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setDeleteClickHandler(this._callback.deleteClick);
-  }
-
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
     newPointButtonComponent.removeDisabled();
     this._callback.deleteClick(EditPointView.parseDataToPoint(this._data));
-  }
-
-  setDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._formDeleteClickHandler);
   }
 
   _setInnerHandlers() {
@@ -325,11 +330,6 @@ export default class EditPointView extends SmartView {
   _closeClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeClick();
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement().querySelector('.event--edit').addEventListener('submit', this._formSubmitHandler);
   }
 
   static parsePointToData(point) {

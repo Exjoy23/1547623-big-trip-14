@@ -1,22 +1,22 @@
 import { remove, render, RenderPosition, replace } from '../utils/render';
 import InfoView from '../view/info-view';
 
-export default class infoPresenter {
-  constructor(infoContainer, pointsModel) {
+export default class InfoPresenter {
+  constructor(infoContainer, stationModel) {
     this._infoContainer = infoContainer;
-    this._pointsModel = pointsModel;
+    this._stationModel = stationModel;
     this._points = null;
 
     this._infoComponent = null;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
-    this._pointsModel.addObserver(this._handleModelEvent);
+    this._stationModel.addObserver(this._handleModelEvent);
   }
 
   init() {
     const prevInfoComponent = this._infoComponent;
-    this._points = this._pointsModel.getPoints();
+    this._points = this._stationModel.getPoints();
 
     if (this._points.length) {
       this._infoComponent = new InfoView(this._points);

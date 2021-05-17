@@ -1,4 +1,4 @@
-import PointsModel from '../model/points-model.js';
+import StationModel from '../model/station-model.js';
 
 const Method = {
   GET: 'GET',
@@ -18,15 +18,33 @@ export default class Api {
     this._authorization = authorization;
   }
 
+  getPoints() {
+    return this._load({ url: 'points' })
+      .then(Api.toJSON)
+      .then((points) => points.map(StationModel.adaptToClient));
+  }
+
+  getOffers() {
+    return this._load({ url: 'offers' })
+      .then(Api.toJSON)
+      .then((offers) => offers.map(StationModel.adaptToClient));
+  }
+
+  getDestinations() {
+    return this._load({ url: 'destinations' })
+      .then(Api.toJSON)
+      .then((destinations) => destinations.map(StationModel.adaptToClient));
+  }
+
   addPoint(point) {
     return this._load({
       url: 'points',
       method: Method.POST,
-      body: JSON.stringify(PointsModel.adaptToServer(point)),
+      body: JSON.stringify(StationModel.adaptToServer(point)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
       .then(Api.toJSON)
-      .then(PointsModel.adaptToClient);
+      .then(StationModel.adaptToClient);
   }
 
   deletePoint(point) {
@@ -36,33 +54,15 @@ export default class Api {
     });
   }
 
-  getPoints() {
-    return this._load({ url: 'points' })
-      .then(Api.toJSON)
-      .then((points) => points.map(PointsModel.adaptToClient));
-  }
-
-  getOffers() {
-    return this._load({ url: 'offers' })
-      .then(Api.toJSON)
-      .then((offers) => offers.map(PointsModel.adaptToClient));
-  }
-
-  getDestinations() {
-    return this._load({ url: 'destinations' })
-      .then(Api.toJSON)
-      .then((destinations) => destinations.map(PointsModel.adaptToClient));
-  }
-
   updatePoint(point) {
     return this._load({
       url: `points/${point.id}`,
       method: Method.PUT,
-      body: JSON.stringify(PointsModel.adaptToServer(point)),
+      body: JSON.stringify(StationModel.adaptToServer(point)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
       .then(Api.toJSON)
-      .then(PointsModel.adaptToClient);
+      .then(StationModel.adaptToClient);
   }
 
   sync(data) {

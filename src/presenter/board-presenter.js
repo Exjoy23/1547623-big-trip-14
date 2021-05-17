@@ -12,8 +12,8 @@ import { filter } from '../utils/filter.js';
 import { newPointButtonComponent } from '../main.js';
 
 export default class BoardPresenter {
-  constructor(boardContainer, pointsModel, filterModel, api) {
-    this._pointsModel = pointsModel;
+  constructor(boardContainer, stationModel, filterModel, api) {
+    this._stationModel = stationModel;
     this._filterModel = filterModel;
     this._boardContainer = boardContainer;
     this._pointPresenter = {};
@@ -40,7 +40,7 @@ export default class BoardPresenter {
     render(this._boardContainer, this._boardComponent, RenderPosition.BEFOREEND);
     render(this._boardComponent, this._pointListComponent, RenderPosition.BEFOREEND);
 
-    this._pointsModel.addObserver(this._handleModelEvent);
+    this._stationModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
 
     this._renderBoard();
@@ -52,7 +52,7 @@ export default class BoardPresenter {
     remove(this._pointListComponent);
     remove(this._boardComponent);
 
-    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._stationModel.removeObserver(this._handleModelEvent);
     this._filterModel.removeObserver(this._handleModelEvent);
   }
 
@@ -64,7 +64,7 @@ export default class BoardPresenter {
 
   _getPoints() {
     const filterType = this._filterModel.getFilter();
-    const points = this._pointsModel.getPoints();
+    const points = this._stationModel.getPoints();
     const filteredPoints = filter[filterType](points);
 
     switch (this._currentSortType) {
@@ -90,7 +90,7 @@ export default class BoardPresenter {
         this._api
           .updatePoint(update)
           .then((response) => {
-            this._pointsModel.updatePoint(updateType, response);
+            this._stationModel.updatePoint(updateType, response);
           })
           .catch(() => {
             this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
@@ -101,7 +101,7 @@ export default class BoardPresenter {
         this._api
           .addPoint(update)
           .then((response) => {
-            this._pointsModel.addPoint(updateType, response);
+            this._stationModel.addPoint(updateType, response);
           })
           .catch(() => {
             this._newPointPresenter.setAborting();
@@ -112,7 +112,7 @@ export default class BoardPresenter {
         this._api
           .deletePoint(update)
           .then(() => {
-            this._pointsModel.deletePoint(updateType, update);
+            this._stationModel.deletePoint(updateType, update);
           })
           .catch(() => {
             this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);

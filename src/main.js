@@ -2,7 +2,7 @@ import MenuView from './view/menu-view.js';
 import StatisticsView from './view/statistics-view.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import BoardPresenter from './presenter/board-presenter.js';
-import PointsModel from './model/points-model.js';
+import StationModel from './model/station-model.js';
 import FilterModel from './model/filter-model.js';
 import Api from './api/api.js';
 import { render, RenderPosition, remove } from './utils/render.js';
@@ -15,7 +15,7 @@ import Store from './api/store.js';
 import Provider from './api/provider.js';
 import { isOnline, setToast } from './utils/common.js';
 
-const AUTHORIZATION = 'Basic exjoy233333333333333111111';
+const AUTHORIZATION = 'Basic exjoy233333333333333331111';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 const HIDE_LINE_CLASS = 'hide-line';
 const STORE_PREFIX = 'big-trip-localstorage';
@@ -34,7 +34,7 @@ const boardContainer = mainElement.querySelector('.board-container');
 const tripMainElement = mainElement.querySelector('.trip-main');
 const pageContainerElements = mainElement.querySelectorAll('.page-body__container');
 
-const pointsModel = new PointsModel();
+const stationModel = new StationModel();
 const filterModel = new FilterModel();
 
 const menuComponent = new MenuView();
@@ -43,9 +43,9 @@ export const newPointButtonComponent = new NewPointButtonView();
 export const destinationData = new Destination();
 export const offersData = new Offers();
 
-const boardPresenter = new BoardPresenter(boardContainer, pointsModel, filterModel, apiWithProvider);
-const filterPresenter = new FilterPresenter(filterElement, filterModel, pointsModel);
-const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
+const boardPresenter = new BoardPresenter(boardContainer, stationModel, filterModel, apiWithProvider);
+const filterPresenter = new FilterPresenter(filterElement, filterModel, stationModel);
+const infoPresenter = new InfoPresenter(tripMainElement, stationModel);
 
 newPointButtonComponent.setClickHandler(() => {
   if (!isOnline()) {
@@ -53,8 +53,8 @@ newPointButtonComponent.setClickHandler(() => {
     return;
   }
 
-  boardPresenter.createPoint();
   newPointButtonComponent.setDisabled();
+  boardPresenter.createPoint();
 });
 
 boardPresenter.init();
@@ -76,7 +76,7 @@ const handleMenuClick = (menuItem) => {
       break;
     case MenuItem.STATISTICS:
       boardPresenter.destroy();
-      statisticsComponent = new StatisticsView(pointsModel.getPoints());
+      statisticsComponent = new StatisticsView(stationModel.getPoints());
       render(boardContainer, statisticsComponent, RenderPosition.BEFOREEND);
       filterPresenter.setDisabledFilters();
       newPointButtonComponent.setDisabled();
@@ -99,7 +99,7 @@ apiWithProvider
   })
   .then(() => {
     apiWithProvider.getPoints().then((points) => {
-      pointsModel.setPoints(UpdateType.INIT, points);
+      stationModel.setPoints(UpdateType.INIT, points);
       infoPresenter.init();
       filterPresenter.init();
     });
